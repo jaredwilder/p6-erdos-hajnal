@@ -1,0 +1,36 @@
+name: P6 Crown Verification Replay
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record historical receipt hash
+        run: sha256sum verification/p6_six_vertex_wall_verification.json | tee /tmp/before.sha256
+      - name: Replay bounded crown verifier
+        run: python verification/p6_six_vertex_wall_verifier.py
+      - name: Require byte-identical regenerated receipt
+        run: |
+          sha256sum verification/p6_six_vertex_wall_verification.json | tee /tmp/after.sha256
+          git diff --exit-code -- verification/p6_six_vertex_wall_verification.json
+      - name: Require PASS and advertised 4x4 exhaustion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path('verification/p6_six_vertex_wall_verification.json').read_text())
+          assert d['pass'] is True
+          assert d['canonical_witness']['all_four_single_edge_orientations_are_P6'] is True
+          r44 = next(x for x in d['matrix_exhaustions'] if x['rows']==4 and x['cols']==4)
+          assert r44['all_matrices'] == 65536
+          assert r44['survivors'] == 2100
+          assert r44['classification_pass'] and r44['trace_bound_pass']
+          print('PASS: recovered P6 receipt reproduced exactly')
+          PY
