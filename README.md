@@ -1,4 +1,4 @@
-# Induced-`P6` Erdős–Hajnal program
+# Induced-`P6` graphs and Erdős–Hajnal structure
 
 The target is the Erdős–Hajnal property for induced-`P6`-free graphs:
 
@@ -7,41 +7,97 @@ The target is the Erdős–Hajnal property for induced-`P6`-free graphs:
 \max(\omega(G),\alpha(G))\ge |V(G)|^c.
 \]
 
-This repository contains a structural theorem package, finite verification, negative results, and explicit remaining reductions for that problem.
+This repository develops a local structural theory for the stable interactions that arise in one route to that problem. The clearest result is an exact normal form: under the relevant nonadjacent-handle hypotheses, the bipartite interaction between two stable slices is a complete bipartite graph with pairwise-disjoint rectangular holes.
 
-## Main structural chain
+## The one-edge rectangle obstruction
 
-The strongest internally verified chain is recorded as
+Suppose `x,x'` and `y,y'` are stable pairs attached to two nonadjacent handles in the configuration used here. Their cross-edges cannot consist of exactly one edge.
 
-```text
-T-006 -> T-021 -> T-022 -> T-023/T-025 -> T-026.
-```
+Indeed, if the unique edge is `x'y`, then the six vertices can be ordered to form an induced path
 
-In mathematical terms it gives:
+\[
+x-a_j-x'-y-a_i-y'.
+\]
 
-1. a forbidden one-edge `2×2` rectangle under nonadjacent comb handles;
-2. disjoint nonempty stable-slice defect sets;
-3. a complete-bipartite-minus-disjoint-rectangles normal form;
-4. a sharp `|T|+1` trace bound and exact pure-pair lower bound;
-5. a crown quotient: a blow-up of `K_{q,q}` minus a matching, with optional universal blocks.
+That is an induced `P6`, a contradiction.
 
-The deterministic verifier checks all four canonical one-edge orientations and exhaustively checks every stable `0/1` matrix from `2×2` through `4×4` for the corresponding local normal-form claims.
+This elementary obstruction is the local engine for the stronger classification below.
 
-## Repository contents
+## Disjoint defect sets
 
-- [`COURT-THEOREMS.md`](COURT-THEOREMS.md) — 30 retained theorem statements.
-- [`NEGATIVE-BANK.md`](NEGATIVE-BANK.md) — 16 refuted or retired routes.
-- [`LIVE-CANDIDATES.md`](LIVE-CANDIDATES.md) — 22 candidate lemmas.
-- [`CLOSURE-PROGRAMS.md`](CLOSURE-PROGRAMS.md) — 18 explicit remaining proof programs.
+Fix two stable slices `S` and `T`. For a row vertex `s\in S`, record the set of nonneighbors it has in `T`.
 
-The negative bank is useful mathematically: several tempting reductions fail, including the old wonderfulness shortcut, single-wall reduction, Ferrers-staircase branch, naive pairwise-refinement multiplication, and standalone single-anchor recursion.
+The rectangle obstruction implies:
 
-## Remaining frontier
+> **Any two distinct nonempty row-defect sets are disjoint.**
 
-The unresolved steps include structured-slice extraction, global crown aggregation, a cotree mass dichotomy, a polynomial Rödl/viral bridge, a PMC-to-pure-pair bridge, and wonderfulness/property-(*) reductions.
+Consequently the entire bipartite interaction has the form
 
-The bounded matrix verification supports the local lemmas; it is not an unbounded proof of the Erdős–Hajnal target. The full induced-`P6` case remains open in this repository.
+\[
+K_{|S|,|T|}\setminus\bigcup_r (S_r\times D_r),
+\]
 
-Historical source material is preserved in `jaredwilder/unpublished-math-papers/p6-six-vertex-wall/`.
+where the `S_r` partition the nonuniversal row classes and the nonempty defect sets `D_r\subseteq T` are pairwise disjoint.
+
+Equivalently: the interaction is **complete bipartite minus disjoint complete bipartite holes**.
+
+The finite verifier exhaustively checks the corresponding stable `0/1` matrices through size `4\times4`, while the theorem itself has a symbolic proof from the induced-`P6` obstruction.
+
+## Sharp trace bound and a pure pair
+
+Because distinct nonempty defect sets are disjoint, each consumes at least one distinct column. Therefore the number of distinct row traces is at most
+
+\[
+\boxed{|T|+1}.
+\]
+
+Choosing a largest trace class yields a pure pair: there is a pair of vertex sets with one side of size at least
+
+\[
+\frac{|S|}{|T|+1}
+\]
+
+and the other of size at least
+
+\[
+\frac{|T|}{2},
+\]
+
+such that the two sides are either complete or anticomplete to one another.
+
+After equal row profiles are merged, the quotient interaction is a blow-up of
+
+\[
+K_{q,q}\text{ minus a matching},
+\]
+
+with optional universal blocks. This is the repository's **crown normal form**.
+
+## Why this matters for the larger problem
+
+The Erdős–Hajnal route needs large homogeneous pairs to survive repeated decomposition. The results above turn one potentially complicated stable interaction into a rigid combinatorial object with only linearly many row types and an explicit pure-pair guarantee.
+
+Other proved pieces in the repository include:
+
+- common-nonneighbor / symmetric-difference completeness for nonadjacent row pairs;
+- near-twin profile covering by Hamming balls;
+- exact-profile classes that form cliques after trimming;
+- a bridge from a large near-twin cluster to a large complete or anticomplete pair;
+- a proof that recursive anchors in the nested-neighborhood route form a clique.
+
+The remaining work is global rather than local: extract the required structured slices at polynomial scale, aggregate the crown structure across the decomposition, and connect the resulting pure pairs to a full Erdős–Hajnal recursion.
+
+## Verification and source map
+
+The finite verification checks all four orientations of the one-edge rectangle and exhaustively enumerates the small stable matrices used as regression tests for the normal form.
+
+The historical source files retain their original internal labels:
+
+- [`COURT-THEOREMS.md`](COURT-THEOREMS.md) — 30 theorem statements and proofs;
+- [`NEGATIVE-BANK.md`](NEGATIVE-BANK.md) — routes that were falsified or superseded;
+- [`LIVE-CANDIDATES.md`](LIVE-CANDIDATES.md) — open local lemmas;
+- [`CLOSURE-PROGRAMS.md`](CLOSURE-PROGRAMS.md) — remaining global reductions.
+
+Those filenames are provenance. The mathematical entry point is the rectangle obstruction, disjoint-defect theorem, trace bound, pure-pair theorem, and crown normal form stated above.
 
 Author: Jared Wilder.
